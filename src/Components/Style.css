@@ -1,0 +1,312 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+.BackgroundStyle {
+  background-image: url("../imgs/background.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100vh;
+  width: auto;
+  text-align: center;
+}
+
+.PhotographerName {
+  color: white;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: clamp(1.2vw, 1vw, 20px);
+
+  text-align: center;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
+.PhotographerName a:link {
+  color: white;
+}
+
+.PhotographerName a:visited {
+  color: white;
+}
+.SearchButtonStyle {
+  fill: red;
+}
+
+.InputStyle {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.2);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2vw;
+  text-align: left;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 40%;
+  height: 5%;
+  border: 0;
+  outline: none;
+}
+
+.ButtonStyle {
+  fill: rgba(255, 255, 255, 0.7);
+  background-color: transparent;
+  position: absolute;
+  width: 20vw;
+  height: 20vh;
+  top: 51.7%;
+  left: 67%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  border: 0;
+}
+
+.ButtonStyle:hover {
+  cursor: pointer;
+}
+
+.ClockStyle {
+  color: white;
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(1rem, 10.333vw, 8rem);
+
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: auto;
+  height: 15%;
+}
+
+.HideButton {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  top: 4%;
+  left: 5%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 30px;
+  text-align: center;
+  fill: rgba(255, 255, 255, 0.7);
+}
+
+.NextImageStyle {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  top: 50%;
+  left: 95%;
+  transform: translate(-50%, -50%);
+  width: 4vw;
+  height: 20vh;
+  object-fit: scale-down;
+  text-align: center;
+  fill: rgba(255, 255, 255, 0.7);
+
+  object-fit: contain;
+}
+.PrevImageStyle {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translate(-50%, -50%);
+  width: 4vw;
+  height: 20vh;
+  object-fit: scale-down;
+  text-align: center;
+  fill: rgba(255, 255, 255, 0.7);
+  object-fit: contain;
+}
+
+.FavouritesButtonStyle {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  top: 4%;
+  left: 10%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 30px;
+  text-align: center;
+  fill: rgba(255, 255, 255, 0.7);
+}
+
+.RestOfScreen {
+  background-color: transparent;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow-y: hidden;
+  transition: 0.5s;
+}
+
+.shown {
+  transition: 0.5s;
+  backdrop-filter: blur(10px);
+  z-index: 1;
+}
+
+.SidebarButtonStyle {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  top: 5%;
+  left: 95%;
+  transform: translate(-50%, -50%);
+  width: 5vw;
+  height: 20vh;
+  object-fit: scale-down;
+  text-align: center;
+  fill: rgba(255, 255, 255, 0.7);
+  object-fit: contain;
+}
+
+.SidebarStyle {
+  background-color: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  top: 50%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 100%;
+  transition: 0.5s;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  overflow-y: scroll;
+}
+
+.hidden {
+  left: 135%;
+}
+
+.CloseSidebarButtonStyle {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  top: 5%;
+  transform: translate(-50%, -50%);
+  width: 8%;
+  height: 8vh;
+  margin-left: 7%;
+  object-fit: scale-down;
+  text-align: center;
+  fill: rgba(255, 255, 255, 0.7);
+  object-fit: contain;
+}
+
+.InputKeyword {
+  margin-top: 10%;
+  margin-left: 2%;
+  color: white;
+  background-color: rgba(255, 255, 255, 0.2);
+  font-size: 1vw;
+  text-align: left;
+  padding: 10px;
+  border-radius: 10px;
+  width: 70%;
+  height: 2%;
+  border: 0;
+  outline: none;
+}
+.InputKeyword::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.InputKeyword.disabled {
+  background-color: #f2f2f2; /* Cambia il colore di sfondo a grigio */
+  color: #888; /* Cambia il colore del testo a grigio scuro */
+  cursor: not-allowed; /* Cambia il cursore quando l'input è disabilitato */
+}
+
+.KeywordsContainerStyle {
+  display: grid;
+  background-color: transparent;
+  width: 80%;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
+  margin: 10px;
+}
+
+.Keywords-grid {
+  background-color: transparent;
+  color: #fff;
+  text-align: center;
+  transition: 0.2s;
+  padding: 30px;
+  display: flex; /* Set display to flex */
+  align-items: center;
+  justify-content: center;
+}
+.KeywordBox {
+  background-color: rgba(255, 255, 255, 0.516);
+  border-radius: 40%;
+  color: #fff;
+  text-align: center;
+  transition: 0.2s;
+  width: 100%;
+  padding: 7px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.CategoriesTitle {
+  margin-top: 4%;
+  margin-left: 2%;
+  font-size: 1.5vw;
+  color: white;
+}
+
+.CategoriesContainerStyle {
+  display: grid;
+  background-color: none;
+  width: 80%;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 10px;
+  row-gap: 10px;
+  margin: 10px;
+}
+
+.grid-item {
+  background-color: #3498db;
+  color: #fff;
+  padding: 35px;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.grid-item.disabled {
+  opacity: 0.7; /* Adjust the opacity as needed */
+  cursor: not-allowed;
+}
+.selected {
+  box-shadow: 0px 0px 0px 5px rgba(255, 255, 255, 0.516);
+  outline: none;
+  border-radius: 10px;
+}
+
+.category-name {
+  color: #fff;
+  text-align: center;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "PicPortal",
+  "description": "Personalizza la tua esperienza di navigazione con PicPortal, l'estensione Chrome che trasforma la tua landing page in una vetrina di ispirazione visiva.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "PicPortal"
+  },
+  "icons": {
+    "16": "128.png",
+    "48": "128.png",
+    "128": "128.png"
+  },
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": ["storage"]
+}
