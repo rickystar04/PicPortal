@@ -28,10 +28,7 @@ class ChangeBackground extends React.Component {
 
   requestImages(e, category) {
     this.setState({ isLoaded: false });
-    //console.log("defaultCategories5", this.state.defaultCategories);
     var defaultCategories = this.state.defaultCategories;
-    console.log("QUI");
-    console.log(category);
 
     //fetch("http://192.168.56.1:3001/", {
     fetch("https://node-server-baoq.onrender.com/", {
@@ -53,7 +50,7 @@ class ChangeBackground extends React.Component {
       })
       .then(
         (data) => {
-          console.log(data);
+          //console.log(data);
           if (data == "ERRORE") {
             var err = { message: "Nessuna immagine trovata" };
             this.setState({
@@ -111,6 +108,7 @@ class ChangeBackground extends React.Component {
     if (this.state.isLoaded) {
       const link = this.state.item[this.state.showing].links.html;
       // Utilizza una Promise per gestire l'asincronia di chrome.storage.sync.get
+      /*
       return new Promise((resolve) => {
         chrome.storage.sync.get({ links: [] }, (obj) => {
           const links = obj.links;
@@ -122,7 +120,7 @@ class ChangeBackground extends React.Component {
 
           this.setState({ isFavorited: isFavorited }, resolve);
         });
-      });
+      });*/
     }
   };
 
@@ -142,6 +140,8 @@ class ChangeBackground extends React.Component {
   favourites = () => {
     const link = this.state.item[this.state.showing].links.html;
 
+    //TODO SYNC
+    /*
     chrome.storage.sync.get({ links: [] }, (obj) => {
       const links = obj.links;
 
@@ -165,6 +165,7 @@ class ChangeBackground extends React.Component {
         console.log(links);
       });
     });
+    */
   };
 
   increaseShowing = () => {
@@ -173,25 +174,19 @@ class ChangeBackground extends React.Component {
     if (!this.state.isLoaded) {
       return; // Blocca l'avanzamento se le immagini non sono state caricate
     }
-    console.log(this.state.showing);
-    console.log(this.state.item.length);
+
     if (this.state.showing == this.state.item.length - 2) {
       //this.state.temp + 1 === 9) {
-      console.log(this.state.temp);
       this.setState({ temp: 0 }, () => {
         if (this.state.category.length >= 1) {
           for (var i = 0; i < this.state.category.length; i++) {
-            console.log("INCREASE1");
             this.requestImages(10, this.state.category[i]);
           }
         } else if (this.state.keywords.length >= 1) {
           for (var i = 0; i < this.state.keywords.length; i++) {
-            console.log("INCREASE2");
             this.requestImages(10, this.state.keywords[i]);
           }
         } else {
-          console.log("INCREASE3");
-          console.log(this.state);
           this.requestImages(10, this.state.category);
         }
       });
@@ -248,7 +243,6 @@ class ChangeBackground extends React.Component {
       this.state.defaultCategories !== this.props.defaultCategories &&
       this.props.defaultCategories.length != 0
     ) {
-      //console.log("defaultCategories4", this.props.defaultCategories);
       this.setState({
         defaultCategories: this.props.defaultCategories,
         //category: [],
@@ -256,10 +250,6 @@ class ChangeBackground extends React.Component {
     }
     if (this.state.defaultCategories.length != 0) {
       if (this.state.category !== this.props.category) {
-        console.log("CATEGORY BEFORE");
-        console.log(this.state.category);
-        console.log("CATEGORY AFTER");
-        console.log(this.props.category);
         this.setState({
           category: this.props.category,
           item: [],
@@ -269,24 +259,14 @@ class ChangeBackground extends React.Component {
         });
         if (this.props.category.length > 1) {
           for (var i = 0; i < this.props.category.length; i++) {
-            console.log("CATEGORY1");
-
             this.requestImages(10, this.props.category[i]);
           }
         } else {
-          console.log("qui2");
-          console.log(this.props.category);
           this.requestImages(10, this.props.category);
         }
-        //this.requestImages(10, this.props.category);
         //TODO DA RIMETTERE
-        chrome.storage.sync.set({ category: this.props.category });
+        //chrome.storage.sync.set({ category: this.props.category });
       } else if (this.state.keywords !== this.props.keywords) {
-        console.log("KEYWORD BEFORE");
-        console.log(this.state.keywords);
-        console.log("KEYWORD AFTER");
-        console.log(this.props.keywords);
-
         this.setState({
           keywords: this.props.keywords,
           item: [],
@@ -298,17 +278,16 @@ class ChangeBackground extends React.Component {
         if (this.props.keywords.length > 1) {
           for (var i = 0; i < this.props.keywords.length; i++) {
             console.log(this.props.keywords[i]);
-            console.log("KEYWORD1");
             this.requestImages(10, this.props.keywords[i]);
           }
         } else {
           console.log(this.props.keywords);
-          console.log("KEYWORD2");
+
           this.requestImages(10, this.props.keywords);
         }
 
         //TODO DA RIMETTERE
-        chrome.storage.sync.set({ keywords: this.props.keywords });
+        //chrome.storage.sync.set({ keywords: this.props.keywords });
       }
     }
   }
@@ -343,7 +322,6 @@ class ChangeBackground extends React.Component {
         />
       );
     } else {
-      console.log("QUI5");
       console.log(item);
 
       const containerStyle = {
@@ -379,7 +357,6 @@ class ChangeBackground extends React.Component {
             className="PrevImageStyle"
             onClick={this.reduceShowing}
           />
-          //TODO Favourite button, da gestire meglio
           <button
             className="FavouritesButtonStyle"
             onClick={this.handleFavourites}

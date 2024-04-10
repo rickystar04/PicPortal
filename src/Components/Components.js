@@ -267,7 +267,7 @@ class Sidebar extends React.Component {
     this.getCategories();
 
     //TODO DA RIMETTERE
-
+    /*
     chrome.storage.sync.get({ category: [], keywords: [] }, (result) => {
       this.setState({
         selectedCategory: result.category,
@@ -283,6 +283,7 @@ class Sidebar extends React.Component {
         this.retrieveKeywords(result.keywords);
       }
     });
+    */
   }
 
   toggleHide = () => {
