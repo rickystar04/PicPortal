@@ -109,10 +109,8 @@ class ChangeBackground extends React.Component {
 
   checkFavourite = () => {
     if (this.state.isLoaded) {
-      const link = this.state.item[this.state.showing + 1].links.html;
-      console.log("VISUALIZZANDO:" + link);
+      const link = this.state.item[this.state.showing].links.html;
       var included = this.state.favourites.includes(link);
-      console.log("1:", included);
       return included;
 
       // Utilizza una Promise per gestire l'asincronia di chrome.storage.sync.get
@@ -134,12 +132,10 @@ class ChangeBackground extends React.Component {
 
   clickedFavourite = () => {
     this.favourites();
-    this.handleFavourites();
   };
   handleFavourites = () => {
     // Chiamata asincrona di checkFavourite
     var fav = this.checkFavourite();
-    console.log("2", fav);
 
     // Inverti lo stato di isfavourited e chiamata a favourites
     this.setState(() => ({ isfavourited: fav }));
@@ -193,10 +189,8 @@ class ChangeBackground extends React.Component {
       //chrome.storage.sync.set({ links: links }, resolve);
       this.setState({ favourites: links }, resolve);
     }).then(() => {
-      console.log("LINKS SALVATI: ");
-      console.log(links);
+      this.handleFavourites();
     });
-    this.handleFavourites();
   };
 
   increaseShowing = () => {
@@ -227,18 +221,15 @@ class ChangeBackground extends React.Component {
     }
 
     if (this.state.isLoaded) {
-      console.log(
-        "GUARDANDO:",
-        this.state.item[this.state.showing + 1].links.html
-      );
-      this.handleFavourites();
-      this.checkFavourite();
       // Controlla nuovamente lo stato isLoaded prima di aumentare showing
       this.setState(
         (prevState) => ({
           showing: prevState.showing + 1,
-          //temp: prevState.temp + 1,
-        }) // Chiamata al precaricamento dell'immagine successiva
+        }),
+        () => {
+          // Qui passa la funzione handleFavourites() come callback
+          this.handleFavourites();
+        }
       );
     }
   };
@@ -250,10 +241,20 @@ class ChangeBackground extends React.Component {
     }
     var showing = this.state.showing;
     if (showing > 0) {
-      this.setState((prevstate) => ({
-        showing: prevstate.showing - 1,
-        temp: prevstate.temp - 1,
-      }));
+      this.setState(
+        (prevstate) => ({
+          showing: prevstate.showing - 1,
+          temp: prevstate.temp - 1,
+        }),
+        () => {
+          console.log(
+            "GUARDANDO:",
+            this.state.item[this.state.showing].links.html
+          );
+          // Qui passa la funzione handleFavourites() come callback
+          this.handleFavourites();
+        }
+      );
     } else {
       console.log("You are at the beginning of the list");
     }
@@ -281,7 +282,6 @@ class ChangeBackground extends React.Component {
     ) {
       this.setState({
         defaultCategories: this.props.defaultCategories,
-        //category: [],
       });
     }
     if (this.state.defaultCategories.length != 0) {
@@ -369,12 +369,7 @@ class ChangeBackground extends React.Component {
         display: !isImageLoaded ? " none" : "",
       };
       return (
-        <div
-          className="BackgroundStyle"
-          style={containerStyle}
-          //onLoad={() => this.setState({ isImageLoaded: true })}
-          //onLoad={alert("CARICATA")}
-        >
+        <div className="BackgroundStyle" style={containerStyle}>
           <Photographer
             name={item[showing].user.name}
             photographer={item[showing].user.links.html}
