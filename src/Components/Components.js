@@ -50,7 +50,7 @@ class TextBoxComponent extends React.Component {
   };
 
   componentWillUnmount() {
-    this.cleanupFunction();
+    //this.cleanupFunction();
   }
 
   funzioneDaChiamare = () => {
@@ -69,6 +69,10 @@ class TextBoxComponent extends React.Component {
 
   handleDefaultCategories = (categories) => {
     this.props.handleDefaultCategories(categories);
+  };
+
+  handleToggleFavorites = (favorites) => {
+    this.props.handleToggleFavorites(favorites);
   };
   render() {
     return (
@@ -94,6 +98,7 @@ class TextBoxComponent extends React.Component {
           passCategory={this.handleCategory}
           passKeywords={this.handleKeywords}
           passDefaultCategories={this.handleDefaultCategories}
+          onToggleFavorites={this.handleToggleFavorites}
         />
       </div>
     );
@@ -236,6 +241,7 @@ class Sidebar extends React.Component {
       categories: [],
       selectedCategory: [],
       keywords: [],
+      favorites: false,
     };
   }
 
@@ -370,8 +376,19 @@ class Sidebar extends React.Component {
     this.props.passKeywords(selectedKeywords);
   };
 
+  toggleFavorites = () => {
+    this.setState(
+      (prevState) => ({
+        favorites: !prevState.favorites,
+      }),
+      () => {
+        this.props.onToggleFavorites(this.state.favorites);
+      }
+    );
+  };
   render() {
-    const { isHidden, categories, selectedCategory, keywords } = this.state;
+    const { isHidden, categories, selectedCategory, keywords, favorites } =
+      this.state;
     return (
       <div>
         <div
@@ -429,6 +446,22 @@ class Sidebar extends React.Component {
                 </div>
               ))}
           </div>
+
+          <div className="FavoritesContainer">
+            <p className="FavoritesTitle">View only favorites</p>
+            <div className="SwitchContainer">
+              {/* Aggiunta del pulsante di switch */}
+              <label className="Switch">
+                <input
+                  type="checkbox"
+                  checked={favorites}
+                  onChange={this.toggleFavorites}
+                />
+                <span className="Slider"></span>
+              </label>
+            </div>
+          </div>
+
           <p className="CategoriesTitle">Categories</p>
           <div className="CategoriesContainerStyle">
             {categories &&

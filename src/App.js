@@ -9,6 +9,7 @@ function App() {
   const [category, setCategory] = useState([]);
   const [keywords, setKeywords] = useState([]);
   const [defaultCategories, setDefaultCategories] = useState([]);
+  const [toggleFavorites, setFavorites] = useState();
 
   /*
   const handleInputChange = (value) => {
@@ -30,6 +31,11 @@ function App() {
     setDefaultCategories([...defaultCategories]);
   };
 
+  const handleToggleFavorites = (favorites) => {
+    // Aggiorna lo stato principale con il valore di favorites
+    setFavorites(favorites);
+  };
+
   return (
     <div>
       <TextBoxComponent
@@ -37,11 +43,13 @@ function App() {
         handleCategory={handleCategory}
         handleKeywords={handleKeywords}
         handleDefaultCategories={handleDefaultCategories}
+        handleToggleFavorites={handleToggleFavorites}
       />
       <ChangeBackground
         category={category}
         keywords={keywords}
         defaultCategories={defaultCategories}
+        toggleFavorites={toggleFavorites}
       />
     </div>
   );

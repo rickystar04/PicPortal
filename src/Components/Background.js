@@ -14,103 +14,112 @@ class ChangeBackground extends React.Component {
       item: [],
       showing: 0,
       temp: 0,
-      isfavourited: false,
+      isfavorited: false,
       category: [],
       keywords: [],
       defaultCategories: [],
       isImageLoaded: false,
-      favourites: [],
+      favorites: [],
+      toggleFavorites: false,
     };
   }
 
   componentDidMount() {
     document.addEventListener("keydown", this.keyDownHandler);
-    this.handleFavourites();
+    this.handleFavorites();
   }
 
   requestImages(e, category) {
     this.setState({ isLoaded: false });
     var defaultCategories = this.state.defaultCategories;
 
-    //fetch("http://192.168.56.1:3001/", {
-    fetch("https://node-server-baoq.onrender.com/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        numOfImages: e,
-        category: category,
-        defaultCategories: defaultCategories,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Errore nella richiesta al server");
-        }
-        return response.json();
+    if (this.state.toggleFavorites) {
+      //fetch("https://node-server-baoq.onrender.com/");
+    } else {
+      //alert("PROVA");
+      fetch("http://localhost:3001/", {
+        //fetch("https://node-server-baoq.onrender.com/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          numOfImages: e,
+          category: category,
+          defaultCategories: defaultCategories,
+        }),
       })
-      .then(
-        (data) => {
-          //console.log(data);
-          if (data == "ERRORE") {
-            var err = { message: "Nessuna immagine trovata" };
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Errore nella richiesta al server");
+          }
+          return response.json();
+        })
+        .then(
+          (data) => {
+            if (data == "ERRORE") {
+              var err = { message: "Nessuna immagine trovata" };
+              this.setState({
+                isLoaded: false,
+                error: err,
+              });
+            } else {
+              this.setState(
+                (prevState) => ({
+                  item: [...prevState.item, ...data],
+                  isLoaded: true,
+                }),
+                () => {
+                  this.preloadNextImage();
+                }
+              );
+            }
+          },
+          (err) => {
             this.setState({
               isLoaded: true,
               error: err,
             });
-          } else {
-            this.setState(
-              (prevState) => ({
-                item: [...prevState.item, ...data],
-                isLoaded: true,
-              }),
-              () => {
-                this.preloadNextImage();
-              }
-            );
           }
-        },
-        (err) => {
-          this.setState({
-            isLoaded: true,
-            error: err,
-          });
-          console.log("Errore: " + err.message);
-        }
-      );
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.showing !== this.state.showing) {
-      this.checkFavourite();
+        );
     }
   }
+
   preloadNextImage = () => {
     const item = this.state.item;
     const showing = this.state.showing;
     const nextImageIndex = showing + 1;
 
-    if (item && item[nextImageIndex]) {
-      // Add a null check for item[nextImageIndex]
-      //const preloadedImages = [...this.state.preloadedImages];
-      const img = new Image();
-      img.src = item[nextImageIndex].urls.full;
-      img.onload = () => {
-        // Questo evento onLoad si verifica solo quando l'immagine è completamente caricata
-        console.log("Immagine completamente caricata");
+    console.log("Preloading next image");
+    if (item && this.state.toggleFavorites) {
+      this.setState({ isImageLoaded: false });
+    }
+
+    if (item) {
+      if (item[nextImageIndex] != undefined) {
+        // Add a null check for item[nextImageIndex]
+        //const preloadedImages = [...this.state.preloadedImages];
+        const img = new Image();
+        img.src = item[nextImageIndex].urls.full;
+        img.onload = () => {
+          // Questo evento onLoad si verifica solo quando l'immagine è completamente caricata
+          console.log("Immagine completamente caricata");
+        };
+        //preloadedImages[nextImageIndex] = img;
+        //this.setState({ preloadedImages: preloadedImages });
+      }
+      setTimeout(() => {
         this.setState({ isImageLoaded: true });
-      };
-      //preloadedImages[nextImageIndex] = img;
-      //this.setState({ preloadedImages: preloadedImages });
+      }, 1000);
     }
   };
 
-  //add favourites
+  //add favorites
 
-  checkFavourite = () => {
+  checkFavorite = () => {
     if (this.state.isLoaded) {
-      const link = this.state.item[this.state.showing].links.html;
-      var included = this.state.favourites.includes(link);
+      const link = this.state.item[this.state.showing];
+      var included = this.state.favorites.includes(link);
       return included;
 
       // Utilizza una Promise per gestire l'asincronia di chrome.storage.sync.get
@@ -119,31 +128,30 @@ class ChangeBackground extends React.Component {
         chrome.storage.sync.get({ links: [] }, (obj) => {
           const links = obj.links;
 
-          const isfavourited = links.includes(link);
+          const isfavorited = links.includes(link);
           console.log(link);
           console.log("LISTA: " + links);
-          console.log("NELLA LISTA: " + isfavourited);
+          console.log("NELLA LISTA: " + isfavorited);
 
-          this.setState({ isfavourited: isfavourited }, resolve);
+          this.setState({ isfavorited: isfavorited }, resolve);
         });
       });*/
     }
   };
 
-  clickedFavourite = () => {
-    this.favourites();
+  clickedFavorite = () => {
+    this.favorites();
   };
-  handleFavourites = () => {
-    // Chiamata asincrona di checkFavourite
-    var fav = this.checkFavourite();
+  handleFavorites = () => {
+    // Chiamata asincrona di checkFavorite
+    var fav = this.checkFavorite();
 
-    // Inverti lo stato di isfavourited e chiamata a favourites
-    this.setState(() => ({ isfavourited: fav }));
+    // Inverti lo stato di isfavorited e chiamata a favorites
+    this.setState(() => ({ isfavorited: fav }));
   };
 
-  favourites = () => {
-    const link = this.state.item[this.state.showing].links.html;
-    console.log(link);
+  favorites = () => {
+    const link = this.state.item[this.state.showing];
 
     //TODO SYNC
     /*
@@ -172,7 +180,7 @@ class ChangeBackground extends React.Component {
     });
     */
 
-    var links = this.state.favourites;
+    var links = this.state.favorites;
     const linkIndex = links.indexOf(link);
     if (linkIndex !== -1) {
       // Link è già presente, rimuovilo
@@ -184,62 +192,77 @@ class ChangeBackground extends React.Component {
       console.log("Link added", link);
     }
 
+    console.log(links);
+
     // Utilizza Promise per gestire l'asincronia di chrome.storage.sync.set
     new Promise((resolve) => {
       //chrome.storage.sync.set({ links: links }, resolve);
-      this.setState({ favourites: links }, resolve);
+      this.setState({ favorites: links }, resolve);
     }).then(() => {
-      this.handleFavourites();
+      this.handleFavorites();
     });
   };
 
   increaseShowing = () => {
+    const {
+      isLoaded,
+      toggleFavorites,
+      showing,
+      item,
+      temp,
+      category,
+      keywords,
+      isImageLoaded,
+    } = this.state;
+    const { length } = item;
+
     this.setState({ isImageLoaded: false });
-    if (!this.state.isLoaded) {
+
+    if (!isLoaded) {
       return; // Blocca l'avanzamento se le immagini non sono state caricate
     }
 
-    if (this.state.showing == this.state.item.length - 2) {
+    if (toggleFavorites) {
+      if (showing < length - 1) {
+        this.setState((prevState) => ({
+          showing: prevState.showing + 1,
+          isImageLoaded: true,
+        }));
+      } else {
+        this.setState({
+          showing: 0,
+          isImageLoaded: true,
+        }); // Torna alla prima immagine quando si è alla fine delle immagini
+        return;
+      }
+    } else if (showing === length - 2) {
       //this.state.temp + 1 === 9) {
       this.setState({ temp: 0 }, () => {
-        if (this.state.category.length >= 1) {
-          for (var i = 0; i < this.state.category.length; i++) {
-            this.requestImages(10, this.state.category[i]);
-          }
-        } else if (this.state.keywords.length >= 1) {
-          for (var i = 0; i < this.state.keywords.length; i++) {
-            this.requestImages(10, this.state.keywords[i]);
-          }
-        } else {
-          this.requestImages(10, this.state.category);
-        }
+        const items =
+          category.length >= 1
+            ? category
+            : keywords.length >= 1
+            ? keywords
+            : [category];
+        items.forEach((item) => this.requestImages(10, item));
       });
     } else {
-      this.setState({ temp: this.state.temp + 1 }, () => {
-        this.preloadNextImage();
-      });
-    }
+      this.setState({ temp: temp + 1 }, () => this.preloadNextImage());
 
-    if (this.state.isLoaded) {
-      // Controlla nuovamente lo stato isLoaded prima di aumentare showing
-      this.setState(
-        (prevState) => ({
-          showing: prevState.showing + 1,
-        }),
-        () => {
-          // Qui passa la funzione handleFavourites() come callback
-          this.handleFavourites();
-        }
-      );
+      if (isLoaded) {
+        // Controlla nuovamente lo stato isLoaded prima di aumentare showing
+        this.setState({ showing: showing + 1 }, () => this.handleFavorites());
+      }
     }
   };
 
   reduceShowing = () => {
-    this.checkFavourite();
+    this.checkFavorite();
     if (!this.state.isLoaded) {
       return; // Blocca l'avanzamento se le immagini non sono state caricate
     }
     var showing = this.state.showing;
+
     if (showing > 0) {
       this.setState(
         (prevstate) => ({
@@ -247,12 +270,8 @@ class ChangeBackground extends React.Component {
           temp: prevstate.temp - 1,
         }),
         () => {
-          console.log(
-            "GUARDANDO:",
-            this.state.item[this.state.showing].links.html
-          );
-          // Qui passa la funzione handleFavourites() come callback
-          this.handleFavourites();
+          // Qui passa la funzione handleFavorites() come callback
+          this.handleFavorites();
         }
       );
     } else {
@@ -275,7 +294,45 @@ class ChangeBackground extends React.Component {
     }
   };
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.props.toggleFavorites !== undefined &&
+      this.props.toggleFavorites !== prevProps.toggleFavorites
+    ) {
+      if (this.state.toggleFavorites === true) {
+        this.setState(
+          {
+            toggleFavorites: this.props.toggleFavorites,
+            item: this.state.favorites, // Reset item to favorites
+            showing: 0,
+            temp: 0,
+            isImageLoaded: false,
+          },
+          () => {
+            this.requestImages(10, this.state.category);
+          }
+        );
+      } else {
+        // Update state only if necessary
+        if (this.state.toggleFavorites !== this.props.toggleFavorites) {
+          this.setState(
+            {
+              toggleFavorites: this.props.toggleFavorites,
+              item: this.state.favorites, // Reset item to favorites
+              showing: 0,
+              temp: 0,
+              isImageLoaded: false,
+            },
+            () => {
+              this.handleFavorites();
+
+              this.preloadNextImage();
+            }
+          );
+        }
+      }
+    }
+
     if (
       this.state.defaultCategories !== this.props.defaultCategories &&
       this.props.defaultCategories.length != 0
@@ -324,50 +381,77 @@ class ChangeBackground extends React.Component {
       }
     }
   }
-  renderContent() {
+  // All'interno del metodo render() della classe ChangeBackground
+  render() {
     const {
       error,
       isLoaded,
       item,
       showing,
-      arrayIndex,
-      preloadedImages,
       isImageLoaded,
+      toggleFavorites,
+      favorites,
     } = this.state;
-    const { category } = this.props;
 
     if (error) {
       return <div>Error: {error.message}</div>;
-    } else if (!isLoaded) {
+    } else if (!isLoaded && showing === 0) {
+      setTimeout(() => {
+        this.setState({ isImageLoaded: true });
+      }, 3000);
       return <div>Loading...</div>;
     } else if (!isImageLoaded) {
-      //return <div>Image loading</div>;
+      console.log("1");
       const width = window.innerWidth;
       const height = window.innerHeight;
-      return (
-        <Blurhash
-          hash={item[showing].blur_hash}
-          width={width}
-          height={height}
-          resolutionX={32}
-          resolutionY={32}
-          punch={1}
-        />
-      );
-    } else {
-      //console.log(item);
 
-      const containerStyle = {
-        backgroundImage: `url(${item[showing].urls.full})`,
-        //backgroundImage: `url(${preloadedImages[arrayIndex]})`,
+      // Verifica se item[showing] è definito prima di accedere a blur_hash
+      if (item[showing]) {
+        console.log("2");
+        return (
+          <div style={{ transition: "1s ease" }}>
+            <Blurhash
+              hash={item[showing].blur_hash}
+              width={width}
+              height={height}
+              resolutionX={32}
+              resolutionY={32}
+              punch={1}
+            />
+          </div>
+        );
+      }
+    } else if (item.length == 0 && toggleFavorites == true) {
+      return <div>Error: nessuna immagine preferita2</div>;
+    } else {
+      let containerStyle = {
+        backgroundImage: `url(${
+          toggleFavorites && favorites.length > 0
+            ? favorites[showing].urls.full
+            : item[showing].urls.full
+        })`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
         height: "100vh",
         width: "100vw",
         textAlign: "center",
-        display: !isImageLoaded ? " none" : "",
+        display: !isImageLoaded ? "none" : "",
       };
+      if (toggleFavorites && favorites.length > 0) {
+        // Se toggleFavorites è true e ci sono preferiti disponibili, mostra solo i preferiti
+        const currentFavorite = favorites[showing];
+        const containerStyle = {
+          backgroundImage: `url(${currentFavorite.urls.full})`,
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          height: "100vh",
+          width: "100vw",
+          textAlign: "center",
+          display: !isImageLoaded ? "none" : "",
+        };
+      }
       return (
         <div className="BackgroundStyle" style={containerStyle}>
           <Photographer
@@ -385,8 +469,8 @@ class ChangeBackground extends React.Component {
             className="PrevImageStyle"
             onClick={this.reduceShowing}
           />
-          <button className="FavouritesButtonStyle" onClick={this.favourites}>
-            {this.state.isfavourited ? (
+          <button className="FavoritesButtonStyle" onClick={this.favorites}>
+            {this.state.isfavorited ? (
               <svg
                 clipRule="evenodd"
                 fillRule="evenodd"
@@ -418,42 +502,6 @@ class ChangeBackground extends React.Component {
           </button>
         </div>
       );
-    }
-  }
-  render() {
-    const { showing, error, isImageLoaded, isLoaded, item } = this.state;
-    if (error) {
-      return <div>Error: {error.message}</div>;
-    } else if (!isLoaded && showing == 0) {
-      setTimeout(() => {
-        this.setState({ isImageLoaded: true });
-      }, 3000);
-      return <div>Loading...</div>;
-    } else if (!isImageLoaded) {
-      //return <div>Image loading</div>;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      return (
-        <div style={{ transition: "1s ease" }}>
-          <Blurhash
-            hash={item[showing].blur_hash}
-            width={width}
-            height={height}
-            resolutionX={32}
-            resolutionY={32}
-            punch={1}
-          />
-        </div>
-      );
-    } else {
-      return this.renderContent();
-    }
-    if (showing === 0) {
-      // Se showing è 0, esegui il timeout e poi rendi il contenuto
-
-      return <div>Loading...</div>;
-    } else {
-      // Se showing non è 0, rendi il contenuto immediatamente
     }
   }
 }
