@@ -11,10 +11,12 @@ PicPortal is a Chrome extension that customizes your browsing experience by tran
 
 ## Installation
 
-1. Clone the repository locally: 
+1. Clone the repository locally:
+
 ```console
 git clone https://github.com/rickystar04/PicPortal.git
 ```
+
 2. Navigate to the cloned directory via command prompt or terminal:
 
 ```console
@@ -43,7 +45,9 @@ After installation, whenever you open a new tab in Chrome, PicPortal's customize
 
 ## Upcoming Features
 
-I'm are currently working on a feature that will allow users to add images to their favorites for quick access. This will enable you to keep a collection of your most inspiring images right at your fingertips.
+- **Favorites Synchronization**: In addition to adding images to your favorites for quick access, we are planning to implement synchronization of your favorites across multiple devices. This will allow you to access your curated collection of inspiring images no matter where you are or which device you're using.
+
+- **Bookmarks**: We are also working on a feature that will allow you to bookmark your favorite web pages directly from the new tab page. This will enable you to quickly navigate to your most visited sites and keep your favorite online content easily accessible.
 
 ## Contributing
 
