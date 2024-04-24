@@ -17,10 +17,9 @@ body {
 .PhotographerName {
   color: white;
   position: absolute;
-  bottom: 0;
+  bottom: 0%;
   right: 0;
   font-size: clamp(1.2vw, 1vw, 20px);
-
   text-align: center;
   border-radius: 10px;
   margin-top: 10px;
@@ -28,13 +27,29 @@ body {
   white-space: nowrap;
 }
 
-.PhotographerName a:link {
+.PhotographerName a:link,
+a:visited {
   color: white;
 }
 
-.PhotographerName a:visited {
+.PlaceLocationStyle {
+  color: white;
+  position: absolute;
+  bottom: 2%;
+  left: 0;
+  font-size: clamp(1.2vw, 1vw, 20px);
+  text-align: center;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.PlaceLocationStyle a:link,
+a:visited {
   color: white;
 }
+
 .SearchButtonStyle {
   fill: red;
 }

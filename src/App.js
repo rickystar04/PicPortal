@@ -17,12 +17,12 @@ function App() {
   };*/
 
   const handleCategory = (category) => {
-    console.log("category3", category);
+    //console.log("category3", category);
     setCategory([...category]);
   };
 
   const handleKeywords = (keywords) => {
-    console.log("keywords3", keywords);
+    //console.log("keywords3", keywords);
     setKeywords([...keywords]);
   };
 

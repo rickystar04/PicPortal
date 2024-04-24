@@ -5,7 +5,6 @@ import nextImage from "../imgs/next-arrow.png";
 import prevImage from "../imgs/prev-arrow.png";
 import { resolve } from "path";
 
-//TODO quando toggleFavorites torna false errore
 class ChangeBackground extends React.Component {
   constructor(props) {
     super(props);
@@ -25,89 +24,84 @@ class ChangeBackground extends React.Component {
   }
 
   componentDidMount() {
+    // Add event listener for keyboard input
     document.addEventListener("keydown", this.keyDownHandler);
+    //Check if the first image is among favorite images
     this.handleFavorites();
   }
 
+  // Function to fetch images from the server
   requestImages(e, category) {
     this.setState({ isLoaded: false });
-    var defaultCategories = this.state.defaultCategories;
 
-    if (this.state.toggleFavorites) {
-      //fetch("https://node-server-baoq.onrender.com/");
-    } else {
-      //alert("PROVA");
-      fetch("http://localhost:3001/", {
-        //fetch("https://node-server-baoq.onrender.com/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          numOfImages: e,
-          category: category,
-          defaultCategories: defaultCategories,
-        }),
+    //fetch("http://localhost:3001/", {
+    fetch("https://node-server-baoq.onrender.com/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        numOfImages: e,
+        category: category,
+        defaultCategories: this.state.defaultCategories,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error in the request to the server");
+        }
+        return response.json();
       })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Errore nella richiesta al server");
-          }
-          return response.json();
-        })
-        .then(
-          (data) => {
-            console.log(data);
-            if (data == "ERRORE") {
-              var err = { message: "Nessuna immagine trovata" };
-              this.setState({
-                isLoaded: false,
-                error: err,
-              });
-            } else {
-              this.setState(
-                (prevState) => ({
-                  item: [...prevState.item, ...data],
-                  isLoaded: true,
-                }),
-                () => {
-                  this.preloadNextImage();
-                }
-              );
-            }
-          },
-          (err) => {
+      .then(
+        (data) => {
+          if (data == "ERRORE") {
+            // Handle error if no images found
+            var err = { message: "No images found" };
             this.setState({
-              isLoaded: true,
+              isLoaded: false,
               error: err,
             });
+          } else {
+            // Update component state with fetched images
+            this.setState(
+              (prevState) => ({
+                item: [...prevState.item, ...data],
+                isLoaded: true,
+              }),
+              () => {
+                this.preloadNextImage(); // Preload next image
+              }
+            );
           }
-        );
-    }
+        },
+        (err) => {
+          // Handle fetch error
+          this.setState({
+            isLoaded: true,
+            error: err,
+          });
+        }
+      );
   }
 
+  // Function to preload next image for smoother transitions
   preloadNextImage = () => {
     const item = this.state.item;
     const showing = this.state.showing;
     const nextImageIndex = showing + 1;
 
-    console.log("Preloading next image");
+    //console.log("Preloading next image");
     if (item && this.state.toggleFavorites) {
       this.setState({ isImageLoaded: false });
     }
 
     if (item) {
       if (item[nextImageIndex] != undefined) {
-        // Add a null check for item[nextImageIndex]
-        //const preloadedImages = [...this.state.preloadedImages];
         const img = new Image();
         img.src = item[nextImageIndex].urls.raw;
         img.onload = () => {
-          // Questo evento onLoad si verifica solo quando l'immagine è completamente caricata
-          console.log("Immagine completamente caricata");
+          console.log("Image fully loaded");
         };
-        //preloadedImages[nextImageIndex] = img;
-        //this.setState({ preloadedImages: preloadedImages });
       }
       setTimeout(() => {
         this.setState({ isImageLoaded: true });
@@ -115,7 +109,29 @@ class ChangeBackground extends React.Component {
     }
   };
 
-  //add favorites
+  // Function to handle keyboard input
+  keyDownHandler = (event) => {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      this.increaseShowing(); // Move to next image
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      this.reduceShowing(); // Move to previous image
+    }
+  };
+
+  // Function to handle favorite images
+  handleFavorites = () => {
+    // Check if current image is favorited
+    var fav = this.checkFavorite();
+
+    // Update component state with favorite status
+    this.setState(() => ({ isfavorited: fav }));
+  };
+
+  // Function to check if current image is favorited
 
   checkFavorite = () => {
     if (this.state.isLoaded) {
@@ -134,47 +150,21 @@ class ChangeBackground extends React.Component {
         },
         blur_hash: item.blur_hash,
       };
+
+      // Get favorite links from Chrome storage
       chrome.storage.sync.get({ links: [] }, (obj) => {
         const links = obj.links;
 
         const isfavorited =
           links.findIndex((links) => links.id === link.id) != -1;
 
-        //console.log("LISTA: ", links);
-        //console.log("NELLA LISTA: " + isfavorited);
-
         this.setState({ isfavorited: isfavorited });
         return isfavorited;
       });
-
-      // Utilizza una Promise per gestire l'asincronia di chrome.storage.sync.get
-      /*
-      return new Promise((resolve) => {
-        chrome.storage.sync.get({ links: [] }, (obj) => {
-          const links = obj.links;
-
-          const isfavorited = links.includes(link);
-          console.log(link);
-          console.log("LISTA: " + links);
-          console.log("NELLA LISTA: " + isfavorited);
-
-          this.setState({ isfavorited: isfavorited }, resolve);
-        });
-      });*/
     }
   };
 
-  clickedFavorite = () => {
-    this.favorites();
-  };
-  handleFavorites = () => {
-    // Chiamata asincrona di checkFavorite
-    var fav = this.checkFavorite();
-
-    // Inverti lo stato di isfavorited e chiamata a favorites
-    this.setState(() => ({ isfavorited: fav }));
-  };
-
+  // Function to add/remove current image to/from favorites
   favorites = () => {
     const item = this.state.item[this.state.showing];
 
@@ -192,42 +182,35 @@ class ChangeBackground extends React.Component {
       blur_hash: item.blur_hash,
     };
 
-    console.log(link);
+    // Get favorite links from Chrome storage
     chrome.storage.sync.get({ links: [] }, (obj) => {
-      console.log(obj);
       const links = obj.links;
 
       const linkIndex = links.findIndex((links) => links.id === link.id);
-      console.log(linkIndex);
 
       if (linkIndex != -1) {
-        // Link è già presente, rimuovilo
+        // Link is already favorited, remove it
         links.splice(linkIndex, 1);
         console.log("Link removed", link);
       } else {
-        // Link non è presente, aggiungilo
+        // Link is not favorited, add it
         links.push(link);
         console.log("Link added", link);
       }
 
-      // Utilizza Promise per gestire l'asincronia di chrome.storage.sync.set
+      // Save updated favorite links to Chrome storage
       chrome.storage.sync.set({ links: links }, () => {
         // Qui puoi eseguire azioni successive dopo che la Promise è stata risolta
-        //console.log("LINKS SALVATI: ");
-        console.log(links);
 
-        chrome.storage.sync.get({ links: [] }, (obj) => {
-          console.log(obj.links);
-        });
-        // Aggiorna lo stato dei preferiti
+        // Update component state with updated favorite links
         this.setState({ favorites: links }, () => {
-          // Chiamata a handleFavorites() dopo che lo stato è stato aggiornato
           this.handleFavorites();
         });
       });
     });
   };
 
+  // Function to increase showing index and load next image
   increaseShowing = () => {
     const {
       isLoaded,
@@ -243,7 +226,7 @@ class ChangeBackground extends React.Component {
     this.setState({ isImageLoaded: false });
 
     if (!isLoaded) {
-      return; // Blocca l'avanzamento se le immagini non sono state caricate
+      return; // Prevent advancing if images are not loaded
     }
 
     if (toggleFavorites) {
@@ -256,12 +239,11 @@ class ChangeBackground extends React.Component {
         this.setState({
           showing: 0,
           isImageLoaded: true,
-        }); // Torna alla prima immagine quando si è alla fine delle immagini
+        }); // Return to the first image when reaching the end
         return;
       }
     } else if (showing === length - 2) {
-      //this.state.temp + 1 === 9) {
-
+      // Load more images when reaching the second last image
       const items =
         category.length >= 1
           ? category
@@ -273,17 +255,19 @@ class ChangeBackground extends React.Component {
       this.preloadNextImage();
 
       if (isLoaded) {
-        // Controlla nuovamente lo stato isLoaded prima di aumentare showing
+        // Check isLoaded again before increasing showing
         this.setState({ showing: showing + 1 }, () => this.handleFavorites());
       }
     }
   };
 
+  // Function to decrease showing index
   reduceShowing = () => {
     this.checkFavorite();
     const { isLoaded, showing, item, toggleFavorites } = this.state;
+    //TODO forse da rimuovere
     if (!this.state.isLoaded) {
-      return; // Blocca l'avanzamento se le immagini non sono state caricate
+      return; // Prevent advancing if images are not loaded
     }
 
     if (toggleFavorites) {
@@ -293,7 +277,10 @@ class ChangeBackground extends React.Component {
           isImageLoaded: true,
         }));
       } else {
-        console.log("You are at the beginning of the list");
+        this.setState({
+          showing: item.length - 1,
+          isImageLoaded: true,
+        });
         return;
       }
     } else if (showing > 0) {
@@ -302,7 +289,7 @@ class ChangeBackground extends React.Component {
           showing: prevstate.showing - 1,
         }),
         () => {
-          // Qui passa la funzione handleFavorites() come callback
+          // Call handleFavorites() after state update
           this.handleFavorites();
         }
       );
@@ -311,22 +298,8 @@ class ChangeBackground extends React.Component {
     }
   };
 
-  //move right-left
-  keyDownHandler = (event) => {
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-
-      // 👇️ call submit function here
-      this.increaseShowing();
-    }
-
-    if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      this.reduceShowing();
-    }
-  };
-
   async componentDidUpdate(prevProps, prevState) {
+    // Update images if toggleFavorites prop changes
     if (
       this.props.toggleFavorites !== undefined &&
       this.props.toggleFavorites !== prevProps.toggleFavorites
@@ -343,9 +316,7 @@ class ChangeBackground extends React.Component {
             resolve
           );
         });
-        console.log("1");
         await this.requestImages(10, this.state.category);
-        console.log("2");
         this.handleFavorites();
       } else {
         // Update state only if necessary
@@ -367,6 +338,7 @@ class ChangeBackground extends React.Component {
       }
     }
 
+    // Update defaultCategories state
     if (
       this.state.defaultCategories !== this.props.defaultCategories &&
       this.props.defaultCategories.length != 0
@@ -375,6 +347,8 @@ class ChangeBackground extends React.Component {
         defaultCategories: this.props.defaultCategories,
       });
     }
+
+    // Load images based on category or keywords
     if (this.state.defaultCategories.length != 0) {
       if (this.state.category !== this.props.category) {
         this.setState({
@@ -390,7 +364,6 @@ class ChangeBackground extends React.Component {
         } else {
           await this.requestImages(10, this.props.category);
         }
-        //TODO DA RIMETTERE
         chrome.storage.sync.set({ category: this.props.category });
       } else if (this.state.keywords !== this.props.keywords) {
         this.setState({
@@ -408,7 +381,6 @@ class ChangeBackground extends React.Component {
           await this.requestImages(10, this.props.keywords);
         }
 
-        //TODO DA RIMETTERE
         chrome.storage.sync.set({ keywords: this.props.keywords });
       }
     }
@@ -429,6 +401,7 @@ class ChangeBackground extends React.Component {
     if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded && showing === 0) {
+      // Render loading indicator if images are not loaded yet
       setTimeout(() => {
         this.setState({ isImageLoaded: true });
       }, 3000);
@@ -437,8 +410,8 @@ class ChangeBackground extends React.Component {
       const width = window.innerWidth;
       const height = window.innerHeight;
 
-      // Verifica se item[showing] è definito prima di accedere a blur_hash
-      console.log(item[showing]);
+      // Render blurhash while image is loading
+
       if (item[showing]) {
         return (
           <div style={{ transition: "1s ease" }}>
@@ -454,8 +427,10 @@ class ChangeBackground extends React.Component {
         );
       }
     } else if (item.length == 0 && toggleFavorites == true) {
-      return <div>Error: nessuna immagine preferita2</div>;
+      return <div>Error: no favorite image</div>;
     } else {
+      // Render background image and UI controls
+
       let containerStyle = {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
@@ -465,9 +440,11 @@ class ChangeBackground extends React.Component {
         textAlign: "center",
         display: !isImageLoaded ? "none" : "",
       };
-      // Se toggleFavorites è true e ci sono preferiti disponibili, mostra solo i preferiti
+      // If toggleFavorites is true and there are favorites available, show only favorites
       const currentImage = toggleFavorites ? favorites[showing] : item[showing];
       containerStyle.backgroundImage = `url(${currentImage.urls.raw})`;
+
+      const placeLocation = item[showing].location;
 
       return (
         <div className="BackgroundStyle" style={containerStyle}>
@@ -476,6 +453,20 @@ class ChangeBackground extends React.Component {
             photographer={item[showing].user.links.html}
             photo_link={item[showing].links.html}
           ></Photographer>
+
+          <div className="PlaceLocationStyle">
+            <a
+              href={
+                "https://maps.google.com/?q=" +
+                placeLocation.position.latitude +
+                "," +
+                placeLocation.position.longitude
+              }
+              target="blank"
+            >
+              {placeLocation.name}
+            </a>
+          </div>
           <img
             src={nextImage}
             className="NextImageStyle"

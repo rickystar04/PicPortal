@@ -6,15 +6,17 @@ class TextBoxComponent extends React.Component {
     super(props);
     this.state = {
       inputValue: "",
-      isHide: true,
+      isHidden: true,
     };
   }
 
+  // Handles changes in the input field and updates the state
   handleChange = (event) => {
     const newValue = event.target.value;
-    this.setState({ inputValue: newValue }); // Pass the value to the parent component
+    this.setState({ inputValue: newValue });
   };
 
+  // Submits the search query to Google when called
   handleSubmit = (text) => {
     if (text == undefined) {
       return;
@@ -22,26 +24,7 @@ class TextBoxComponent extends React.Component {
     window.location.href = `https://www.google.com/search?q=${text}`;
   };
 
-  //FORSE DA RIMUOVERE
-  /*
-  componentDidMount() {
-    const keyDownHandler = (event) => {
-      //console.log("User pressed: ", event.key);
-
-      if (event.key === "Enter" && event.target.value !== "") {
-        event.preventDefault();
-
-        // 👇️ call submit function here
-        this.handleSubmit(event.target.value);
-      }
-    };
-    document.addEventListener("keydown", keyDownHandler);
-
-    this.cleanupFunction = () => {
-      document.removeEventListener("keydown", keyDownHandler);
-    };
-  }
-*/
+  // Handles the Enter key event to trigger a search
   SearchQuery = (event) => {
     if (event.key === "Enter" && event.target.value !== "") {
       // Esegui le azioni per il primo input
@@ -53,9 +36,10 @@ class TextBoxComponent extends React.Component {
     //this.cleanupFunction();
   }
 
-  funzioneDaChiamare = () => {
+  // Toggles the visibility of the components
+  toggleHideButton = () => {
     this.setState((prevState) => ({
-      isHide: !prevState.isHide,
+      isHidden: !prevState.isHidden,
     }));
   };
 
@@ -77,7 +61,7 @@ class TextBoxComponent extends React.Component {
   render() {
     return (
       <div>
-        {this.state.isHide && (
+        {this.state.isHidden && (
           <input
             type="text"
             value={this.state.inputValue}
@@ -86,14 +70,14 @@ class TextBoxComponent extends React.Component {
             className="InputStyle"
           />
         )}
-        {this.state.isHide && (
+        {this.state.isHidden && (
           <ButtonComponent
             text={this.state.inputValue}
-            isHide={this.state.isHide}
+            isHidden={this.state.isHidden}
           />
         )}
-        {this.state.isHide && <DisplayDate isHide={this.state.isHide} />}
-        <HideButtonComponent chiamataFunzione={this.funzioneDaChiamare} />
+        {this.state.isHidden && <DisplayDate isHidden={this.state.isHidden} />}
+        <HideButtonComponent handleHideButton={this.toggleHideButton} />
         <Sidebar
           passCategory={this.handleCategory}
           passKeywords={this.handleKeywords}
@@ -106,11 +90,12 @@ class TextBoxComponent extends React.Component {
 }
 ////////////////////////////////
 
+//SearchButton
 class ButtonComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isHide: true,
+      isHidden: true,
     };
   }
 
@@ -143,7 +128,7 @@ class DisplayDate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isHide: true,
+      isHidden: true,
       time: new Date(),
     };
   }
@@ -164,7 +149,7 @@ class DisplayDate extends React.Component {
 
     return (
       <div>
-        {this.state.isHide && (
+        {this.state.isHidden && (
           <p className="ClockStyle">
             {hours}:{minutes}
           </p>
@@ -178,22 +163,22 @@ class HideButtonComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isHide: true,
+      isHidden: true,
     };
   }
   toggleHide = () => {
     this.setState((prevState) => ({
-      isHide: !prevState.isHide,
+      isHidden: !prevState.isHidden,
     }));
   };
 
   handleClick = () => {
     // Chiamata alla funzione passata come prop quando viene cliccato l'elemento in ComponenteB
-    this.props.chiamataFunzione();
+    this.props.handleHideButton();
     this.toggleHide();
   };
   render() {
-    if (this.state.isHide) {
+    if (this.state.isHidden) {
       return (
         <button className="HideButton" onClick={this.handleClick}>
           <svg
