@@ -446,6 +446,7 @@ class ChangeBackground extends React.Component {
 
       const placeLocation = item[showing].location;
 
+      console.log(item[showing]);
       return (
         <div className="BackgroundStyle" style={containerStyle}>
           <Photographer
@@ -455,17 +456,21 @@ class ChangeBackground extends React.Component {
           ></Photographer>
 
           <div className="PlaceLocationStyle">
-            <a
-              href={
-                "https://maps.google.com/?q=" +
-                placeLocation.position.latitude +
-                "," +
-                placeLocation.position.longitude
-              }
-              target="blank"
-            >
-              {placeLocation.name}
-            </a>
+            {placeLocation && placeLocation.name ? (
+              <a
+                href={
+                  "https://maps.google.com/?q=" +
+                  placeLocation.position.latitude +
+                  "," +
+                  placeLocation.position.longitude
+                }
+                target="blank"
+              >
+                {placeLocation.name}
+              </a>
+            ) : (
+              null || undefined
+            )}
           </div>
           <img
             src={nextImage}
