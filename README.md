@@ -1,6 +1,8 @@
 <h1 align="center"> PicPortal </h1> <br>
 
 <p align="center"><img src="https://imgur.com/GckAf4b.png" width="50%" align="center"></p>
+<p align="center">
+<a href="https://www.codefactor.io/repository/github/rickystar04/picportal"><img src="https://www.codefactor.io/repository/github/rickystar04/picportal/badge" alt="CodeFactor" /></a></p>
 <p>
 PicPortal is an innovative Chrome extension designed to enhance your daily internet browsing experience by transforming the standard new tab page into a vibrant display of stunning images and photographs. With PicPortal, every new tab you open becomes a gateway to visual inspiration and creativity.</p>
 
