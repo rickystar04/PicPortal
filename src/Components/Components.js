@@ -262,7 +262,7 @@ class Sidebar extends React.Component {
     chrome.storage.sync.get({ category: [], keywords: [] }, (result) => {
       this.setState({
         selectedCategory: result.category,
-        selectedKeywords: result.keywords,
+        //selectedKeywords: result.keywords,
       });
       console.log("RECUPERATA:" + result.keywords);
       if (result.category.length > 0) {
@@ -270,8 +270,8 @@ class Sidebar extends React.Component {
       }
 
       if (result.keywords.length > 0) {
-        console.log("QUI");
-        this.retrieveKeywords(result.keywords);
+        //console.log("QUI");
+        //this.retrieveKeywords(result.keywords);
       }
     });
   }
